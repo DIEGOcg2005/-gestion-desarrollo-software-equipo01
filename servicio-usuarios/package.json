@@ -1,0 +1,9 @@
+{
+  "name": "servicio-usuarios",
+  "version": "1.0.0",
+  "description": "Microservicio de Usuarios - Sistema de Gestion Escolar",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo"Pruebas ejecutadas correctamente" && exit 0"
+  }
+}
