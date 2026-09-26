@@ -19,6 +19,8 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Ejecutar pruebas en servicio-usuarios
+      - name: Instalar y Probar servicio-usuarios
         working-directory: ./servicio-usuarios
-        run: npm test
+        run: |
+          npm install
+          npm test
