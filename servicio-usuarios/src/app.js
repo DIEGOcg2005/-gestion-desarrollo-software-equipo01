@@ -3,40 +3,42 @@ const path = require('path');
 const express = require('express');
 const { createClient } = require('redis');
 
+const app = express();
+const PORT = process.env.PORT || 3000;
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+
+// 1. Cargar la vista de tu Sistema de Gestión Escolar
 const pagina = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 
-function createApp(redisClient) {
-  const app = express();
+// Servir archivos estáticos por si tienes CSS o JS en src
+app.use(express.static(__dirname));
 
-  app.get('/', (req, res) => {
-    res.type('html').send(pagina);
-  });
+// Ruta principal (Muestra tu página HTML)
+app.get('/', (req, res) => {
+  res.type('html').send(pagina);
+});
 
-  app.get('/health', (req, res) => {
-    res.json({ status: 'activo' });
-  });
+// Endpoint de salud requerido por la práctica
+app.get('/health', (req, res) => {
+  res.json({ status: 'activo' });
+});
 
-  app.get('/api/visitas', async (req, res) => {
-    try {
-      const visitas = await redisClient.incr('visitas');
-      res.json({ visitas });
-    } catch (err) {
-      res.status(503).json({ error: 'Redis no disponible', detalle: 'No se pudo actualizar el contador' });
-    }
-  });
+// Endpoint de visitas con Redis
+app.get('/api/visitas', async (req, res) => {
+  try {
+    const client = createClient({ url: REDIS_URL });
+    client.on('error', (err) => console.error('Redis Client Error', err));
+    await client.connect();
+    
+    const visitas = await client.incr('contador_visitas');
+    await client.disconnect();
+    
+    res.json({ visitas });
+  } catch (error) {
+    res.status(500).json({ error: 'Error de conexión con Redis' });
+  }
+});
 
-  return app;
-}
-
-async function main() {
-  const url = process.env.REDIS_URL || 'redis://localhost:6379';
-  const port = process.env.PORT || 3000;
-  const client = createClient({ url, disableOfflineQueue: true });
-  client.on('error', (e) => console.error('Redis error:', e.message));
-  client.connect().catch((e) => console.error('No se pudo conectar a Redis:', e.message));
-  createApp(client).listen(port, '0.0.0.0', () => console.log(`Servidor escuchando en 0.0.0.0:${port}`));
-}
-
-if (require.main === module) main();
-
-module.exports = { createApp };
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor de Gestión Escolar corriendo en el puerto ${PORT}`);
+});

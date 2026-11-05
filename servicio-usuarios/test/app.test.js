@@ -8,11 +8,11 @@ function levantar(redisFalso) {
   });
 }
 
-test('GET / muestra el titulo Control de visitas', async () => {
+test('GET / muestra el titulo Sistema de Gestión Escolar', async () => {
   const server = await levantar({});
   const res = await fetch(`http://localhost:${server.address().port}/`);
   assert.strictEqual(res.status, 200);
-  assert.match(await res.text(), /Control de visitas/);
+  assert.match(await res.text(), /Sistema de Gestión Escolar/);
   server.close();
 });
 

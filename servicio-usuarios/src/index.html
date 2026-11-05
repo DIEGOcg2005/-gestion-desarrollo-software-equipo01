@@ -3,16 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Control de visitas | Calificaciones - Sistema de Gestión Escolar</title>
+<title>Calificaciones | Sistema de Gestión Escolar</title>
 <style>
   :root { --azul:#1f3864; --azul2:#2e5597; --dorado:#c9a227; --fondo:#f3f6fb; --texto:#1b2433; --gris:#5b667a; --verde:#1e8e5a; --rojo:#c0392b; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Segoe UI", Arial, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.5; }
-  .barra { background: #14264a; color: #cfd8ea; font-size: 13px; padding: 8px 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
-  .barra strong { color: #fff; }
-  header { background: linear-gradient(135deg, var(--azul), var(--azul2)); color: #fff; padding: 40px 20px 90px; text-align: center; }
+  header { background: linear-gradient(135deg, var(--azul), var(--azul2)); color: #fff; padding: 48px 20px 90px; text-align: center; }
   header .insignia { display: inline-block; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.35); padding: 4px 14px; border-radius: 999px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
-  header h1 { font-size: clamp(28px, 5vw, 44px); margin: 14px 0 6px; }
+  header h1 { font-size: clamp(28px, 5vw, 46px); margin: 14px 0 6px; }
   header p { opacity: .9; }
   main { max-width: 980px; margin: -56px auto 40px; padding: 0 20px; }
   .tarjeta { background: #fff; border-radius: 16px; box-shadow: 0 6px 24px rgba(31,56,100,.12); padding: 26px; margin-bottom: 22px; }
@@ -53,10 +51,6 @@
 </style>
 </head>
 <body>
-<div class="barra">
-  <span>Control de visitas: <strong id="visitas">…</strong></span>
-  <span id="servicio">Comprobando servicio…</span>
-</div>
 <header>
   <span class="insignia">Universidad Tecnológica Fidel Velázquez · Equipo DevTrack</span>
   <h1>Sistema de Gestión Escolar</h1>
@@ -154,20 +148,6 @@
   }
 
   document.getElementById('buscar').addEventListener('input', function (e) { dibujar(e.target.value); });
-
-  fetch('/api/visitas').then(function (r) {
-    return r.json().then(function (d) { return { ok: r.ok, datos: d }; });
-  }).then(function (res) {
-    document.getElementById('visitas').textContent = res.ok ? res.datos.visitas : 'Redis no disponible';
-  }).catch(function () {
-    document.getElementById('visitas').textContent = 'sin conexión';
-  });
-
-  fetch('/health').then(function (r) { return r.json(); }).then(function (d) {
-    document.getElementById('servicio').textContent = 'Servicio ' + d.status;
-  }).catch(function () {
-    document.getElementById('servicio').textContent = 'Servicio sin respuesta';
-  });
 
   resumen();
   dibujar('');
