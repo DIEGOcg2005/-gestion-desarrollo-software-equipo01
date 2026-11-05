@@ -1,2 +1,3 @@
 node_modules/
 .env echo .vscode/ echo *.log echo bin/ echo obj/
+node_modules

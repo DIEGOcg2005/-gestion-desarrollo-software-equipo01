@@ -2,8 +2,14 @@
   "name": "servicio-usuarios",
   "version": "1.0.0",
   "description": "Microservicio de Usuarios - Sistema de Gestion Escolar",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo"Pruebas ejecutadas correctamente" && exit 0"
+    "start": "node src/app.js",
+    "test": "node --test"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "redis": "^4.6.13"
   }
 }
