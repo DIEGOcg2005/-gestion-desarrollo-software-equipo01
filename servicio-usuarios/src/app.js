@@ -1,13 +1,15 @@
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const { createClient } = require('redis');
+
+const pagina = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 
 function createApp(redisClient) {
   const app = express();
 
   app.get('/', (req, res) => {
-    res.send('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Control de visitas</title></head>' +
-      '<body><h1>Control de visitas</h1><p>Servicio de Usuarios - Sistema de Gestion Escolar</p>' +
-      '<p><a href="/api/visitas">/api/visitas</a> | <a href="/health">/health</a></p></body></html>');
+    res.type('html').send(pagina);
   });
 
   app.get('/health', (req, res) => {
