@@ -1,24 +1,49 @@
-name: CI
-
+name: CI y publicacion Docker
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
+permissions:
+  contents: read
 jobs:
-  build:
+  validar:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: servicio-usuarios
     steps:
       - name: Descargar codigo
         uses: actions/checkout@v4
-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: servicio-usuarios/package-lock.json
+      - name: Instalar dependencias
+        run: npm ci
       - name: Ejecutar pruebas
-        run: echo "Pruebas ejecutadas con exito"
-
+        run: npm test
+      - name: Construir imagen Docker
+        run: docker build -t control-visitas:${{ github.sha }} .
       - name: Generar Artefacto
         uses: actions/upload-artifact@v4
         with:
           name: proyecto-completo
           path: .
+  publicar:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: ./servicio-usuarios
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/control-visitas:latest
